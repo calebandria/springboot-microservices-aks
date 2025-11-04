@@ -1,7 +1,8 @@
 package com.ecom.userservice.controller;
 
 import com.ecom.userservice.config.TestSecurityConfig;
-import com.ecom.userservice.domain.User;
+import com.ecom.userservice.domain.Role;
+import com.ecom.userservice.domain.Users;
 import com.ecom.userservice.dto.CreateUserRequest;
 import com.ecom.userservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,10 +38,11 @@ class UserControllerTest {
     @Test
     void shouldReturnUserNotFound() throws Exception {
         // Given
-        String id = "nonexistent";
+        Long id = (long) 12578;
         when(userService.getUserById(id)).thenThrow(new UsernameNotFoundException("User not found: " + id));
 
         // When & Then
+
         mockMvc.perform(get("/users/{id}", id))
                 .andExpect(status().isNotFound());
     }
@@ -47,12 +50,14 @@ class UserControllerTest {
     @Test
     void shouldCreateUser() throws Exception {
         // Given
-        CreateUserRequest req = new CreateUserRequest("bob", "bob@ecom.com", "pass", Set.of("VENDOR"));
-        User savedUser = User.builder()
-                .id("123")
-                .username("bob")
-                .email("bob@ecom.com")
-                .roles(Set.of("VENDOR"))
+        CreateUserRequest req = new CreateUserRequest("bob", "bob@ecom.com", "pass", Set.of("SELLER"));
+        Users savedUser = Users.builder()
+                .username(req.username())
+                .email(req.email())
+                .roles(req.roles().stream().map((String role) ->{
+                    return Role.valueOf(role);
+                }
+                ).collect(Collectors.toSet()))
                 .build();
 
         when(userService.createUser(req)).thenReturn(savedUser);
@@ -63,6 +68,6 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("bob"))
-                .andExpect(jsonPath("$.roles[0]").value("VENDOR"));
+                .andExpect(jsonPath("$.roles[0]").value("SELLER"));
     }
 }

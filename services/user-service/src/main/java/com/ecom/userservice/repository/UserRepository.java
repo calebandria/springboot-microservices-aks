@@ -1,23 +1,18 @@
 package com.ecom.userservice.repository;
 
-import com.ecom.userservice.domain.User;
-import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.repository.CrudRepository;
+import com.ecom.userservice.domain.Users;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, String> {
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends JpaRepository<Users, Long> {
+    Optional<Users> findByUsername(String username);
+
+    Optional<Users> findByEmail(String mail);
+
+    Users getById(Long id);
+    Users getByEmail(String email);
     
-    @Query("""
-        SELECT * FROM users 
-        WHERE ROLES LIKE '%' || :role || '%' 
-           OR ROLES = :role
-           OR :role = ANY(roles)
-        """)
-    Set<User> findByRole(String role);
-    
-    boolean existsByEmail(String email);
+
 }

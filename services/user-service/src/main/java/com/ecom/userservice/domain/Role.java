@@ -1,10 +1,16 @@
 package com.ecom.userservice.domain;
 
-public final class Role {
-    public static final String USER = "USER";
-    public static final String VENDOR = "VENDOR";
-    public static final String ADMIN = "ADMIN";
+import java.util.Set;
 
-    // Prevent instantiation
-    private Role() {}
+public enum Role {
+    
+    ADMIN, // System administrators with full privileges
+    BUYER, // Standard customer for purchasing products
+    SELLER // Vendor/merchant responsible for listing and selling products
+;
+
+    Set<Role> valueOf(Set<String> roles) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'valueOf'");
+    }
 }
