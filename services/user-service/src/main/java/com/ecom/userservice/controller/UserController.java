@@ -3,6 +3,7 @@ package com.ecom.userservice.controller;
 import com.ecom.userservice.domain.Users;
 import com.ecom.userservice.service.UserService;
 import com.ecom.userservice.dto.CreateUserRequest;
+import com.ecom.userservice.dto.UserResponseDetails;
 import com.ecom.userservice.dto.UserResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         UserResponseDto user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("api/internal/users/{email}")
+    public ResponseEntity<UserResponseDetails> getUserByEmail(@PathVariable String email){
+        UserResponseDetails user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 }

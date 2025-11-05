@@ -4,6 +4,7 @@ import com.ecom.userservice.domain.Role;
 import com.ecom.userservice.domain.Users;
 import com.ecom.userservice.repository.UserRepository;
 import com.ecom.userservice.dto.CreateUserRequest;
+import com.ecom.userservice.dto.UserResponseDetails;
 import com.ecom.userservice.dto.UserResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-    
+
     @Autowired
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -72,12 +73,27 @@ public class UserService {
                         .map((Function<? super Role, ? extends String>) userRoles -> {
                             return userRoles.toString();
                         })
-                        .collect(Collectors.toSet())
-                        );
+                        .collect(Collectors.toSet()));
 
         return userResonseDto;
     }
 
+    private UserResponseDetails mapuserToResponseDetails(Users user) {
+        UserResponseDetails userDetails = new UserResponseDetails(
+                user.getUsername(),
+                user.getEmail(),
+                user.getPasswordHash(),
+                user.getRoles().stream()
+                        .map((Function<? super Role, ? extends String>) userRoles -> {
+                            return userRoles.toString();
+                        })
+                        .collect(Collectors.toSet()));
+        return userDetails;
+    }
+
+    public UserResponseDetails getUserByEmail(String email) {
+        return mapuserToResponseDetails(repository.getByEmail((email)));
+    }
 
 }
 
